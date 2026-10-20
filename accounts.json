@@ -740,5 +740,117 @@
     ],
     "claimed_at": 1792515409.8614388,
     "created_by": "PC-Thread-1"
+  },
+  {
+    "id": "a24021f3c85d4bcebc086366a6c401cc",
+    "email": "ads-power-user1792515418843@sx.org",
+    "token": "2463620|2f2G0ftY0PTxLjk0iCjwpzDWwlNXOdDd2cTdvxWj619622a5",
+    "auth_code": "osn71hby6e",
+    "session_id": "4defb41373e34cb9a8dcd7e8fe75ccc3",
+    "sx_link": "https://sx-org-proxy.saaslink.net/NyjLyk?x_auth_code=osn71hby6e&utm-source=Adspower&utm-keyword=Adspower",
+    "proxies": [
+      {
+        "host": "suhail.srvgdx.com",
+        "port": 9999,
+        "ip": "185.180.220.99",
+        "id": 242627983,
+        "login": "qyx5peqrdu-pool-res.mobile.corp-country-CA-mode-hold-session-6ad79d5b75c6f",
+        "password": "E4cm1xvub49R1T5O",
+        "name": "20 October 16-56 - residential,mobile,corporate - CA",
+        "is_unlimited": false
+      },
+      {
+        "host": "rukbat.srvgdx.com",
+        "port": 9999,
+        "ip": "190.2.141.12",
+        "id": 242627982,
+        "login": "qyx5peqrdu-pool-res.mobile.corp-country-CL-mode-hold-session-6ad79d5b74934",
+        "password": "E4cm1xvub49R1T5O",
+        "name": "20 October 16-56 - residential,mobile,corporate - CL",
+        "is_unlimited": false
+      },
+      {
+        "host": "deneb.srvgdx.com",
+        "port": 9999,
+        "ip": "185.185.51.243",
+        "id": 242627981,
+        "login": "qyx5peqrdu-pool-res.mobile.corp-country-AR-mode-hold-session-6ad79d5b73568",
+        "password": "E4cm1xvub49R1T5O",
+        "name": "20 October 16-56 - residential,mobile,corporate - AR",
+        "is_unlimited": false
+      },
+      {
+        "host": "sirius.srvgdx.com",
+        "port": 9999,
+        "ip": "212.8.252.6",
+        "id": 242627980,
+        "login": "qyx5peqrdu-pool-res.mobile.corp-country-DE-mode-hold-session-6ad79d5b72157",
+        "password": "E4cm1xvub49R1T5O",
+        "name": "20 October 16-56 - residential,mobile,corporate - DE",
+        "is_unlimited": false
+      },
+      {
+        "host": "niki.srvgdx.com",
+        "port": 9999,
+        "ip": "212.8.248.113",
+        "id": 242627979,
+        "login": "qyx5peqrdu-pool-res.mobile.corp-country-FR-mode-hold-session-6ad79d5b70d34",
+        "password": "E4cm1xvub49R1T5O",
+        "name": "20 October 16-56 - residential,mobile,corporate - FR",
+        "is_unlimited": false
+      },
+      {
+        "host": "sirius.srvgdx.com",
+        "port": 9999,
+        "ip": "212.8.252.6",
+        "id": 242627978,
+        "login": "qyx5peqrdu-pool-res.mobile.corp-country-UA-mode-hold-session-6ad79d5b6f975",
+        "password": "E4cm1xvub49R1T5O",
+        "name": "20 October 16-56 - residential,mobile,corporate - UA",
+        "is_unlimited": false
+      },
+      {
+        "host": "phact.srvgdx.com",
+        "port": 9999,
+        "ip": "62.112.8.26",
+        "id": 242627977,
+        "login": "qyx5peqrdu-pool-res.mobile.corp-country-VN-mode-hold-session-6ad79d5b6e593",
+        "password": "E4cm1xvub49R1T5O",
+        "name": "20 October 16-56 - residential,mobile,corporate - VN",
+        "is_unlimited": false
+      },
+      {
+        "host": "sika.srvgdx.com",
+        "port": 9999,
+        "ip": "185.132.177.174",
+        "id": 242627976,
+        "login": "qyx5peqrdu-pool-res.mobile.corp-country-BR-mode-hold-session-6ad79d5b6d1bd",
+        "password": "E4cm1xvub49R1T5O",
+        "name": "20 October 16-56 - residential,mobile,corporate - BR",
+        "is_unlimited": false
+      },
+      {
+        "host": "sika.srvgdx.com",
+        "port": 9999,
+        "ip": "185.132.177.174",
+        "id": 242627975,
+        "login": "qyx5peqrdu-pool-res.mobile.corp-country-RU-mode-hold-session-6ad79d5b6bce1",
+        "password": "E4cm1xvub49R1T5O",
+        "name": "20 October 16-56 - residential,mobile,corporate - RU",
+        "is_unlimited": false
+      },
+      {
+        "host": "suhail.srvgdx.com",
+        "port": 9999,
+        "ip": "185.180.220.99",
+        "id": 242627974,
+        "login": "qyx5peqrdu-pool-res.mobile.corp-country-US-mode-hold-session-6ad79d5b69b4a",
+        "password": "E4cm1xvub49R1T5O",
+        "name": "20 October 16-56 - residential,mobile,corporate - US",
+        "is_unlimited": false
+      }
+    ],
+    "claimed_at": 1792515417.7489183,
+    "created_by": "PC-Thread-2"
   }
 ]
