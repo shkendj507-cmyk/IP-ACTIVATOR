@@ -2308,5 +2308,15 @@
     "created_at": 1792512170.7625098,
     "created_on": "PC-Local",
     "adspower_app_active": false
+  },
+  {
+    "id": "e347e6e85980438694b84bc130aeb148",
+    "email": "ads-power-user1792512255107@sx.org",
+    "token": "2463425|ep3VxJ32Ki3LSt8mtUi5ZZPsP8RmG8FuqdoXr0ngc6855218",
+    "auth_code": "hlod4er4nn",
+    "session_id": "47ee735c485e459694d5e05521114f3e",
+    "sx_link": "https://sx-org-proxy.saaslink.net/NyjLyk?x_auth_code=hlod4er4nn&utm-source=Adspower&utm-keyword=Adspower",
+    "created_at": 1792512254.3445597,
+    "created_by": "PC-Thread-3"
   }
 ]
