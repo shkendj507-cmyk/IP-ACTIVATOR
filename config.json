@@ -1,0 +1,35 @@
+{
+  "github": {
+    "enabled": true,
+    "token": "YOUR_GITHUB_TOKEN_ENV",
+    "repo": "shkendj507-cmyk/IP-ACTIVATOR",
+    "file_path": "accounts.json",
+    "branch": "main",
+    "poll_interval_seconds": 5
+  },
+  "proxy_server": {
+    "host": "0.0.0.0",
+    "primary_port": 1000,
+    "secondary_port": 8080,
+    "default_country": "US",
+    "country_ports": {
+      "9001": "US",
+      "9002": "GB",
+      "9003": "DE",
+      "9004": "CA",
+      "9006": "AU",
+      "9007": "IN",
+      "9008": "SG",
+      "9009": "JP"
+    }
+  },
+  "cloudflare": {
+    "worker_url": "https://sx.shkendj507.workers.dev"
+  },
+  "retry_engine": {
+    "max_retries": 5,
+    "dial_timeout": 3.5,
+    "auto_purge_407": true,
+    "hot_swap_speed_ms": 1
+  }
+}
