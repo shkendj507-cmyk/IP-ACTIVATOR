@@ -8,6 +8,7 @@ import socket
 import time
 import urllib.parse
 import urllib.request
+import uuid
 from typing import List, Tuple
 
 logging.basicConfig(
@@ -21,6 +22,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 VAULT_FILE = os.path.join(BASE_DIR, "claimed_proxies.json")
 PROXY_TXT_FILE = os.path.join(BASE_DIR, "proxy.txt")
 PROXIES_TXT_FILE = os.path.join(BASE_DIR, "proxies.txt")
+SESSION_FILE = os.path.join(BASE_DIR, "session.json")
 CF_WORKER_URL = "https://sx.shkendj507.workers.dev"
 
 MAX_CLAIMED_AGE = 7200  # 2 Hours
@@ -30,6 +32,7 @@ def format_proxy(p: dict) -> str:
     port = str(p.get("port") or "").strip()
     login = str(p.get("login") or p.get("user") or "").strip()
     pwd = str(p.get("password") or p.get("pass") or "").strip()
+    # Ensure clean standard residential pool format
     login = re.sub(r'[-_]pool[-_]res\.mobile\.corp', '-pool-res', login, flags=re.IGNORECASE)
     return f"{ip}:{port}:{login}:{pwd}"
 
@@ -86,9 +89,57 @@ def _save_vault(vault: List[dict]):
     except Exception as e:
         logger.error(f"Error saving vault: {e}")
 
-def fetch_proxies_from_sx(token: str, session_id: str) -> List[dict]:
-    """Fetches the 10 proxies from SX using Cloudflare Edge Worker."""
-    # 1. Via Cloudflare Edge
+def signin_sx(x_auth_code: str, session_id: str = "") -> Tuple[str, str]:
+    """Signs in to SX.org using the auth code via Cloudflare Edge or direct."""
+    x_auth_code = (x_auth_code or "").strip()
+    if not x_auth_code:
+        return "", ""
+    if not session_id:
+        session_id = uuid.uuid4().hex
+
+    # 1. Via Cloudflare Edge Worker
+    if CF_WORKER_URL:
+        try:
+            cf_url = f"{CF_WORKER_URL}/api/signin"
+            payload = json.dumps({"auth_code": x_auth_code}).encode("utf-8")
+            req = urllib.request.Request(cf_url, data=payload, headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0"}, method="POST")
+            with urllib.request.urlopen(req, timeout=12) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                if data.get("success") and data.get("token"):
+                    logger.info("[+] [Cloudflare Edge] Successfully signed in to SX.org via Worker!")
+                    return data.get("email", ""), data.get("token", "")
+        except Exception as e:
+            logger.debug(f"Worker signin notice: {e}")
+
+    # 2. Direct Fallback
+    url = "https://auth.sx.org/signin/adspower"
+    payload = json.dumps({"source": "adspower", "x_auth_code": x_auth_code}).encode("utf-8")
+    headers = {
+        "Content-Type": "application/json",
+        "X-Ads-Session": session_id,
+        "Origin": "https://my.sx.org",
+        "Referer": "https://my.sx.org/",
+        "User-Agent": "Mozilla/5.0"
+    }
+    try:
+        req = urllib.request.Request(url, data=payload, headers=headers, method="POST")
+        with urllib.request.urlopen(req, timeout=12) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            u = data.get("data", {})
+            return u.get("email", ""), u.get("token", "")
+    except Exception as e:
+        logger.error(f"Direct SX signin failed: {e}")
+        return "", ""
+
+def fetch_proxies_from_sx(token: str, session_id: str = "") -> List[dict]:
+    """Fetches the 10 proxies from SX using Cloudflare Edge Worker or direct."""
+    token = (token or "").strip()
+    if not token:
+        return []
+    if not session_id:
+        session_id = uuid.uuid4().hex
+
+    # 1. Via Cloudflare Edge Worker
     if CF_WORKER_URL:
         try:
             cf_url = f"{CF_WORKER_URL}/proxy?url=" + urllib.parse.quote("https://api.sx.org/proxy/short")
@@ -107,7 +158,7 @@ def fetch_proxies_from_sx(token: str, session_id: str) -> List[dict]:
                     logger.info("[+] [Cloudflare Edge] Successfully fetched proxies via Worker!")
                     return data.get("data", [])
         except Exception as e:
-            logger.debug(f"Cloudflare proxy fetch notice: {e}. Falling back...")
+            logger.debug(f"Cloudflare proxy fetch notice: {e}. Falling back to direct...")
 
     # 2. Direct fallback
     try:
@@ -128,31 +179,44 @@ def fetch_proxies_from_sx(token: str, session_id: str) -> List[dict]:
         logger.error(f"Direct proxy fetch failed: {e}")
         return []
 
-def activate_account_proxies(account_dict: dict) -> bool:
-    """Instantly saves proxies to proxy.txt and active vault (<10ms)."""
-    proxies = account_dict.get("proxies", [])
+def add_account_proxies_to_live_pool(account_entry: dict) -> int:
+    """
+    Appends all freshly claimed proxies from this account to the active live pool (proxy.txt & proxies.txt).
+    Maintains 1000% loaded pool continuously!
+    """
+    proxies = account_entry.get("proxies", [])
     if not proxies:
-        return False
+        return 0
 
-    lines = []
-    for p in proxies:
-        line = format_proxy(p)
-        if line and ":" in line:
-            lines.append(line)
+    existing_lines = []
+    if os.path.exists(PROXY_TXT_FILE):
+        try:
+            with open(PROXY_TXT_FILE, "r", encoding="utf-8") as f:
+                existing_lines = [l.strip() for l in f if l.strip() and not l.strip().startswith("#")]
+        except Exception:
+            existing_lines = []
 
-    if not lines:
-        return False
+    new_formatted = [format_proxy(p) for p in proxies]
+    combined = list(existing_lines)
+    added = 0
+    for nf in new_formatted:
+        if nf and ":" in nf and nf not in combined:
+            combined.append(nf)
+            added += 1
 
+    content = "\n".join(combined) + "\n"
     try:
         with open(PROXY_TXT_FILE, "w", encoding="utf-8") as f:
-            f.write("\n".join(lines) + "\n")
-        with open(PROXIES_TXT_FILE, "a", encoding="utf-8") as f:
-            f.write("\n".join(lines) + "\n")
-        logger.info(f"[+] [ACTIVATED] {len(lines)} proxies active in proxy.txt!")
-        return True
+            f.write(content)
+        with open(PROXIES_TXT_FILE, "w", encoding="utf-8") as f:
+            f.write(content)
+        logger.info(f"[+] [LIVE POOL UPDATED] Added {added} new proxies! Total active pool: {len(combined)} proxies in proxy.txt")
     except Exception as e:
-        logger.error(f"Error activating proxies: {e}")
-        return False
+        logger.error(f"Error writing proxy.txt: {e}")
+
+    # Also record in claimed vault
+    add_account_to_vault(account_entry)
+    return len(combined)
 
 def remove_dead_proxy(dead_proxy_str: str) -> bool:
     """
@@ -188,7 +252,7 @@ def remove_dead_proxy(dead_proxy_str: str) -> bool:
                     f.write("\n".join(remaining) + "\n")
                 else:
                     f.write("")
-            logger.warning(f"[HOT-SWAP] Purged {removed} dead 407 proxy! Live proxies remaining: {len(remaining)}")
+            logger.warning(f"[HOT-SWAP] Purged {removed} dead 407 proxy! Live proxies remaining in pool: {len(remaining)}")
 
             # If all proxies depleted, pop next pre-claimed account from vault
             if not remaining:
@@ -200,17 +264,12 @@ def remove_dead_proxy(dead_proxy_str: str) -> bool:
 
 def add_account_to_vault(account_dict: dict):
     vault = _load_vault()
-    acc_id = account_dict.get("id") or account_dict.get("email")
+    acc_id = account_dict.get("id") or account_dict.get("email") or account_dict.get("auth_code")
     for v in vault:
-        if v.get("id") == acc_id or v.get("email") == acc_id:
+        if v.get("id") == acc_id or v.get("email") == acc_id or v.get("auth_code") == acc_id:
             return
     vault.append(account_dict)
     _save_vault(vault)
-    logger.info(f"[+] [Vault Reserve] Added account {acc_id[:15]} to reserve (Total: {len(vault)})")
-
-    # If proxy.txt is empty, activate immediately
-    if not os.path.exists(PROXY_TXT_FILE) or os.path.getsize(PROXY_TXT_FILE) == 0:
-        activate_account_proxies(account_dict)
 
 def pop_and_activate_next() -> bool:
     vault = _load_vault()
@@ -218,4 +277,5 @@ def pop_and_activate_next() -> bool:
         return False
     next_acc = vault.pop(0)
     _save_vault(vault)
-    return activate_account_proxies(next_acc)
+    add_account_proxies_to_live_pool(next_acc)
+    return True
