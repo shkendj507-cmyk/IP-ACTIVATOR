@@ -97,19 +97,12 @@ async def github_receiver_task(poll_interval: int = 5):
                 else:
                     fail_cnt = failure_counts.get(acc_id, 0) + 1
                     failure_counts[acc_id] = fail_cnt
-                    if fail_cnt >= 2:
-                        # Skip quickly so it moves to valid accounts
-                        processed_ids.add(acc_id)
-                        save_processed_ids(processed_ids)
-                else:
-                    fail_cnt = failure_counts.get(acc_id, 0) + 1
-                    failure_counts[acc_id] = fail_cnt
-                    if fail_cnt >= 4:
-                        logger.warning(f"[-] Account {acc_id[:25]} failed 4 times (invalid/expired code). Marking skipped.")
+                    if fail_cnt >= 3:
+                        logger.warning(f"[-] Account {acc_id[:25]} failed 3 times. Marking skipped.")
                         processed_ids.add(acc_id)
                         save_processed_ids(processed_ids)
                     else:
-                        logger.warning(f"[!] No proxies returned for {acc_id[:25]} (Attempt {fail_cnt}/4). Retrying next cycle...")
+                        logger.warning(f"[!] No proxies returned for {acc_id[:25]} (Attempt {fail_cnt}/3). Retrying next cycle...")
 
         except asyncio.CancelledError:
             break
