@@ -122,7 +122,7 @@ class FastProxyServer:
 
         try:
             mtime = os.path.getmtime(PROXY_TXT_FILE)
-            if not force and mtime == self.last_mtime and self.proxies_cache:
+            if not force and mtime == self.last_mtime:
                 return self.proxies_cache
 
             parsed = []
@@ -140,9 +140,11 @@ class FastProxyServer:
                             "pass": parts[3].strip() if len(parts) >= 4 else "",
                             "raw": line
                         })
+            old_count = len(self.proxies_cache)
             self.proxies_cache = parsed
             self.last_mtime = mtime
-            logger.info(f"Loaded {len(parsed)} upstream proxies from proxy.txt")
+            if len(parsed) != old_count or force:
+                logger.info(f"Loaded {len(parsed)} upstream proxies from proxy.txt")
         except Exception as e:
             logger.error(f"Error loading proxy.txt: {e}")
 
