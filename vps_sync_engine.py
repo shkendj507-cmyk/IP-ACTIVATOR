@@ -129,12 +129,9 @@ async def main():
     print("=" * 78 + "\n")
 
     srv = proxy_server.FastProxyServer()
-    asyncio.create_task(srv.start(), name="ProxyServer")
     asyncio.create_task(github_receiver_task(poll_interval=5), name="GitHubReceiver")
     asyncio.create_task(keep_alive_and_cleaner_task(), name="KeepAliveMonitor")
-
-    while True:
-        await asyncio.sleep(3600)
+    await srv.start()
 
 if __name__ == "__main__":
     try:
