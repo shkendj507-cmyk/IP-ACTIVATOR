@@ -2008,5 +2008,15 @@
     "created_at": 1792507086.6184075,
     "created_on": "PC-Local",
     "adspower_app_active": false
+  },
+  {
+    "id": "d14f4e3dcd1a4589a7ca1d1edbefddca",
+    "email": "ads-power-user1792507101425@sx.org",
+    "token": "sx_e9a9ac33233c472691a0",
+    "auth_code": "fbcebf61b8",
+    "session_id": "0de0eb9c09aa46a3b90790dd30b87c40",
+    "created_at": 1792507112.2656205,
+    "created_on": "PC-Local",
+    "adspower_app_active": false
   }
 ]
