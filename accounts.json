@@ -6452,5 +6452,16 @@
     ],
     "claimed_at": 1792517557.0816717,
     "created_by": "PC-Thread-1"
+  },
+  {
+    "id": "600e4adc63bb47939de551006c7b2dfa",
+    "email": "adswwfu9cm@desigroup.buzz",
+    "token": "",
+    "auth_code": "1ehnf7sd57",
+    "session_id": "124f5e0d0e1e44b793e211a5f0255e5b",
+    "sx_link": "https://sx-org-proxy.saaslink.net/NyjLyk?x_auth_code=1ehnf7sd57&utm-source=Adspower&utm-keyword=Adspower",
+    "proxies": [],
+    "claimed_at": 1792517559.4368095,
+    "created_by": "PC-Thread-2"
   }
 ]
