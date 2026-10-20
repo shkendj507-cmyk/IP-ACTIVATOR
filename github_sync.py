@@ -27,6 +27,8 @@ def save_config(cfg: dict):
     except Exception as e:
         logger.error(f"Error saving config.json: {e}")
 
+_push_lock = threading.Lock()
+
 class GitHubBridge:
     """
     Direct GitHub REST API Bridge.
@@ -44,7 +46,6 @@ class GitHubBridge:
             "Accept": "application/vnd.github.v3+json",
             "User-Agent": "EasyAds-VPS-Automation"
         }
-        # Only attach Authorization if it is a real GitHub token
         if self.token and (self.token.startswith("ghp_") or self.token.startswith("github_pat_")):
             headers["Authorization"] = f"token {self.token}"
         return headers
@@ -54,7 +55,6 @@ class GitHubBridge:
         if not self.repo or "/" not in self.repo:
             return []
 
-        # 1. Primary: Direct Fast Raw GitHub Fetch (100% free of 401 Unauthorized)
         raw_url = f"https://raw.githubusercontent.com/{self.repo}/{self.branch}/{self.file_path}"
         try:
             req = urllib.request.Request(raw_url, headers={"User-Agent": "EasyAds-VPS"}, method="GET")
@@ -65,7 +65,6 @@ class GitHubBridge:
         except Exception:
             pass
 
-        # 2. Secondary: GitHub REST API
         url = f"https://api.github.com/repos/{self.repo}/contents/{self.file_path}?ref={self.branch}"
         req = urllib.request.Request(url, headers=self._headers(), method="GET")
 
@@ -85,7 +84,7 @@ class GitHubBridge:
         return []
 
     def push_account(self, new_account: dict) -> bool:
-        """Appends a newly created AdsPower account on PC and pushes to GitHub."""
+        """Appends a newly created AdsPower account on PC and pushes to GitHub with conflict resolution."""
         if not self.repo or "/" not in self.repo or not self.token or self.token.startswith("ghp_YOUR"):
             logger.warning("[PC-Sync] GitHub token/repo not configured in config.json! Saving to local accounts.json...")
             local_file = os.path.join(BASE_DIR, "accounts.json")
@@ -102,56 +101,72 @@ class GitHubBridge:
             return True
 
         url = f"https://api.github.com/repos/{self.repo}/contents/{self.file_path}"
-        current_sha = None
-        existing_accounts = []
+        new_id = new_account.get("email") or new_account.get("auth_code") or new_account.get("token") or "acc"
 
-        # 1. Get current file state
-        try:
-            get_req = urllib.request.Request(f"{url}?ref={self.branch}", headers=self._headers(), method="GET")
-            with urllib.request.urlopen(get_req, timeout=10) as resp:
-                data = json.loads(resp.read().decode("utf-8"))
-                current_sha = data.get("sha")
-                content = base64.b64decode(data.get("content", "")).decode("utf-8")
-                existing_accounts = json.loads(content)
-                if not isinstance(existing_accounts, list):
-                    existing_accounts = []
-        except urllib.error.HTTPError as e:
-            if e.code != 404:
-                logger.error(f"GitHub check error: {e}")
-                return False
-        except Exception:
-            pass
+        with _push_lock:
+            for attempt in range(1, 6):
+                current_sha = None
+                existing_accounts = []
 
-        # 2. Append new account (avoid duplicates)
-        new_id = new_account.get("email") or new_account.get("auth_code") or new_account.get("token")
-        for acc in existing_accounts:
-            if (acc.get("email") and acc.get("email") == new_id) or (acc.get("auth_code") and acc.get("auth_code") == new_id):
-                logger.info(f"Account {new_id} already exists on GitHub.")
-                return True
+                # 1. Fetch current remote state
+                try:
+                    get_req = urllib.request.Request(f"{url}?ref={self.branch}", headers=self._headers(), method="GET")
+                    with urllib.request.urlopen(get_req, timeout=10) as resp:
+                        data = json.loads(resp.read().decode("utf-8"))
+                        current_sha = data.get("sha")
+                        content = base64.b64decode(data.get("content", "")).decode("utf-8")
+                        existing_accounts = json.loads(content)
+                        if not isinstance(existing_accounts, list):
+                            existing_accounts = []
+                except urllib.error.HTTPError as e:
+                    if e.code != 404:
+                        logger.error(f"GitHub check error: {e}")
+                        time.sleep(1)
+                        continue
+                except Exception:
+                    pass
 
-        existing_accounts.append(new_account)
-        new_content_bytes = json.dumps(existing_accounts, indent=2).encode("utf-8")
-        encoded_content = base64.b64encode(new_content_bytes).decode("utf-8")
+                # 2. Append new account (avoid duplicates)
+                duplicate = False
+                for acc in existing_accounts:
+                    if (acc.get("email") and acc.get("email") == new_id) or (acc.get("auth_code") and acc.get("auth_code") == new_id):
+                        duplicate = True
+                        break
 
-        # 3. Commit to GitHub
-        payload = {
-            "message": f"Auto-Sync: Add AdsPower Account {new_id[:15]} [skip ci]",
-            "content": encoded_content,
-            "branch": self.branch
-        }
-        if current_sha:
-            payload["sha"] = current_sha
-
-        put_data = json.dumps(payload).encode("utf-8")
-        put_req = urllib.request.Request(url, data=put_data, headers=self._headers(), method="PUT")
-
-        try:
-            with urllib.request.urlopen(put_req, timeout=12) as resp:
-                if resp.status in (200, 201):
-                    logger.info(f"[+] [GitHub Auto-Sync] Successfully pushed AdsPower account to GitHub repo ({self.repo})!")
+                if duplicate:
+                    logger.info(f"Account {new_id} already exists on GitHub.")
                     return True
-        except Exception as e:
-            logger.error(f"[!] GitHub push failed: {e}")
-            return False
+
+                existing_accounts.append(new_account)
+                new_content_bytes = json.dumps(existing_accounts, indent=2).encode("utf-8")
+                encoded_content = base64.b64encode(new_content_bytes).decode("utf-8")
+
+                # 3. Commit to GitHub
+                payload = {
+                    "message": f"Auto-Sync: Add AdsPower Account {new_id[:15]} [skip ci]",
+                    "content": encoded_content,
+                    "branch": self.branch
+                }
+                if current_sha:
+                    payload["sha"] = current_sha
+
+                put_data = json.dumps(payload).encode("utf-8")
+                put_req = urllib.request.Request(url, data=put_data, headers=self._headers(), method="PUT")
+
+                try:
+                    with urllib.request.urlopen(put_req, timeout=12) as resp:
+                        if resp.status in (200, 201):
+                            logger.info(f"[+] [GitHub Auto-Sync] Successfully pushed AdsPower account to GitHub repo ({self.repo})!")
+                            return True
+                except urllib.error.HTTPError as e:
+                    if e.code == 409:
+                        # Conflict: another thread committed just now. Wait briefly and retry!
+                        time.sleep(0.8 + attempt * 0.4)
+                        continue
+                    logger.error(f"[!] GitHub push failed (HTTP {e.code}): {e.reason}")
+                    return False
+                except Exception as e:
+                    logger.error(f"[!] GitHub push failed: {e}")
+                    time.sleep(1)
 
         return False
