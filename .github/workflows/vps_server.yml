@@ -89,7 +89,7 @@ jobs:
           export PYTHONUNBUFFERED=1
           export GITHUB_REPOSITORY="${{ github.repository }}"
           export GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
-          python -u vps_sync_engine.py
+          sudo -E python -u vps_sync_engine.py
 
       - name: Commit and Push Updated Proxies
         if: always()
