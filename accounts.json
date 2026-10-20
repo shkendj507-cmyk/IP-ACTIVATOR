@@ -2468,5 +2468,15 @@
     "created_at": 1792507891.7797034,
     "created_on": "PC-Local",
     "adspower_app_active": false
+  },
+  {
+    "id": "e0d781048c854912a67b34e40ceb49ae",
+    "email": "ads-power-user1792507906409@sx.org",
+    "token": "sx_a1d531d937664c58a7b8",
+    "auth_code": "8259fa9703",
+    "session_id": "c84686753b1e4c9087f76df17d403d7b",
+    "created_at": 1792507908.0557985,
+    "created_on": "PC-Local",
+    "adspower_app_active": false
   }
 ]
