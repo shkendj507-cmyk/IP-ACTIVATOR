@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "id": "39bd249368904668bcae9330884181c3",
+    "email": "ads-power-user1792508306968@sx.org",
+    "token": "sx_6a9ac3f50bae4248ba1a",
+    "auth_code": "89779c8f6e",
+    "session_id": "0a596c9d354a41bfa6b0d953999b7ade",
+    "created_at": 1792508317.66774,
+    "created_on": "PC-Local",
+    "adspower_app_active": false
+  }
+]
