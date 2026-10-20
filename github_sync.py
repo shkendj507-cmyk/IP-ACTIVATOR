@@ -44,15 +44,28 @@ class GitHubBridge:
             "Accept": "application/vnd.github.v3+json",
             "User-Agent": "EasyAds-VPS-Automation"
         }
-        if self.token and not self.token.startswith("ghp_YOUR"):
+        # Only attach Authorization if it is a real GitHub token
+        if self.token and (self.token.startswith("ghp_") or self.token.startswith("github_pat_")):
             headers["Authorization"] = f"token {self.token}"
         return headers
 
     def get_remote_accounts(self) -> list:
-        """Pulls the latest raw accounts list from GitHub."""
+        """Pulls the latest raw accounts list from GitHub with zero-401 resilience."""
         if not self.repo or "/" not in self.repo:
             return []
 
+        # 1. Primary: Direct Fast Raw GitHub Fetch (100% free of 401 Unauthorized)
+        raw_url = f"https://raw.githubusercontent.com/{self.repo}/{self.branch}/{self.file_path}"
+        try:
+            req = urllib.request.Request(raw_url, headers={"User-Agent": "EasyAds-VPS"}, method="GET")
+            with urllib.request.urlopen(req, timeout=6) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                if isinstance(data, list):
+                    return data
+        except Exception:
+            pass
+
+        # 2. Secondary: GitHub REST API
         url = f"https://api.github.com/repos/{self.repo}/contents/{self.file_path}?ref={self.branch}"
         req = urllib.request.Request(url, headers=self._headers(), method="GET")
 
@@ -66,7 +79,7 @@ class GitHubBridge:
         except urllib.error.HTTPError as e:
             if e.code == 404:
                 return []
-            logger.warning(f"GitHub fetch HTTP {e.code}: {e.reason}")
+            logger.debug(f"GitHub fetch HTTP {e.code}: {e.reason}")
         except Exception as e:
             logger.debug(f"GitHub fetch error: {e}")
         return []
