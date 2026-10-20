@@ -2018,5 +2018,15 @@
     "created_at": 1792507112.2656205,
     "created_on": "PC-Local",
     "adspower_app_active": false
+  },
+  {
+    "id": "d819b55a029f45c2b42991752a8c5828",
+    "email": "ads-power-user1792507126539@sx.org",
+    "token": "sx_6475bfe1299c4765bb2f",
+    "auth_code": "fae626ad12",
+    "session_id": "f6fe4772ff104958bf05131c1e908bf3",
+    "created_at": 1792507128.6254334,
+    "created_on": "PC-Local",
+    "adspower_app_active": false
   }
 ]
