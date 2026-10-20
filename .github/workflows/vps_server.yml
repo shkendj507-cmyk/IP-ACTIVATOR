@@ -1,0 +1,105 @@
+name: EasyAds 24/7 VPS Automation & Proxy Server
+
+on:
+  workflow_dispatch:
+    inputs:
+      tailscale_authkey:
+        description: 'Tailscale Auth Key (tskey-auth-...)'
+        required: false
+        default: ''
+        type: string
+      ssh_password:
+        description: 'SSH / Terminal Password for runner'
+        required: false
+        default: 'Manik123@'
+        type: string
+  schedule:
+    # Auto-triggers every 5 hours to maintain 24/7 continuous uptime
+    - cron: '0 */5 * * *'
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  run-vps-proxy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    env:
+      TS_KEY: ${{ github.event.inputs.tailscale_authkey || secrets.TAILSCALE_AUTHKEY }}
+      LOGIN_PASS: ${{ github.event.inputs.ssh_password || 'Manik123@' }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup System User & Password
+        run: |
+          echo "runner:${{ env.LOGIN_PASS }}" | sudo chpasswd
+          echo "root:${{ env.LOGIN_PASS }}" | sudo chpasswd
+
+      - name: Connect Tailscale WireGuard
+        if: env.TS_KEY != ''
+        uses: tailscale/github-action@v2
+        with:
+          authkey: ${{ env.TS_KEY }}
+          args: --ssh --hostname=easyads-vps
+
+      - name: Display Connection Information
+        run: |
+          TS_IP=$(tailscale ip -4 2>/dev/null || echo "Tailscale Connecting...")
+          echo "================================================================"
+          echo "            🖥️ EASYADS VPS LOGIN & PROXY INFORMATION           "
+          echo "================================================================"
+          echo " HOSTNAME     : easyads-vps"
+          echo " TAILSCALE IP : $TS_IP"
+          echo " PROXY PORTS  : 1000 (Primary) & 8080 (Secondary)"
+          echo " DEDICATED CC : 9001 (US), 9002 (GB), 9003 (DE), 9008 (SG)"
+          echo " SSH LOGIN    : ssh runner@$TS_IP"
+          echo " PASSWORD     : ${{ env.LOGIN_PASS }}"
+          echo "================================================================"
+
+          cat <<EOF >> $GITHUB_STEP_SUMMARY
+          ## 🚀 EasyAds VPS Proxy Server Active!
+
+          | Service | Details |
+          |---|---|
+          | **Tailscale IP** | \`$TS_IP\` |
+          | **Proxy Ports** | \`1000\` (Primary) & \`8080\` (Secondary) |
+          | **Format** | \`$TS_IP:1000:manik-country-BJ-rotate:easyads\` |
+          | **SSH Terminal** | \`ssh runner@$TS_IP\` (Pass: \`${{ env.LOGIN_PASS }}\`) |
+          EOF
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Run EasyAds VPS Master Sync Engine
+        run: |
+          # Allow binding to ports 1000 and 8080 cleanly
+          sudo sysctl -w net.ipv4.ip_unprivileged_port_start=80
+          export PYTHONUNBUFFERED=1
+          export GITHUB_REPOSITORY="${{ github.repository }}"
+          export GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          python -u vps_sync_engine.py
+
+      - name: Commit and Push Updated Proxies
+        if: always()
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add proxy.txt proxies.txt accounts.json claimed_proxies.json 2>/dev/null || true
+          git stash || true
+          git pull --rebase origin main || true
+          git stash pop 2>/dev/null || true
+          git add proxy.txt proxies.txt accounts.json claimed_proxies.json 2>/dev/null || true
+          git commit -m "Auto-update live proxy pool [skip ci]" || echo "No changes to commit"
+          git push origin main || echo "Push failed or nothing to push"
