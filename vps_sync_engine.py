@@ -49,19 +49,29 @@ async def github_receiver_task(poll_interval: int = 5):
 
     while True:
         try:
-            remote_accounts = bridge.get_remote_accounts()
+            # Process newest pushed accounts first
+            remote_accounts = list(reversed(bridge.get_remote_accounts()))
             for acc in remote_accounts:
                 acc_id = acc.get("email") or acc.get("auth_code") or acc.get("id")
                 if not acc_id or acc_id in processed_ids:
+                    continue
+
+                logger.info(f"[+] [NEW ACCOUNT FROM PC] Processing: {acc_id[:30]}...")
+
+                # 1. If proxies are already pre-claimed by PC, inject immediately!
+                proxies = acc.get("proxies", [])
+                if proxies and isinstance(proxies, list) and len(proxies) > 0:
+                    total_live = proxy_vault.add_account_proxies_to_live_pool(acc)
+                    logger.info(f"[SUCCESS] Injected {len(proxies)} pre-claimed proxies from PC! Total Active Pool: {total_live} proxies loaded in proxy.txt.")
+                    processed_ids.add(acc_id)
+                    save_processed_ids(processed_ids)
                     continue
 
                 auth_code = (acc.get("auth_code") or "").strip()
                 token = (acc.get("token") or "").strip()
                 session_id = (acc.get("session_id") or "").strip() or uuid.uuid4().hex
 
-                logger.info(f"[+] [NEW ACCOUNT FROM PC] Processing: {acc_id[:30]}...")
-
-                # 1. Exchange auth_code for real SX token if needed
+                # 2. Exchange auth_code for real SX token if needed
                 if not token or token.startswith("sx_") or len(token) < 20:
                     if auth_code:
                         logger.info(f"[*] Signing in to SX with auth code {auth_code[:12]}...")
@@ -72,12 +82,11 @@ async def github_receiver_task(poll_interval: int = 5):
                             if sx_email:
                                 acc["email"] = sx_email
 
-                # 2. Fetch proxies from SX
-                proxies = []
+                # 3. Fetch proxies from SX
                 if token:
                     proxies = proxy_vault.fetch_proxies_from_sx(token, session_id)
 
-                # 3. Add to live pool
+                # 4. Add to live pool
                 if proxies:
                     acc["proxies"] = proxies
                     acc["claimed_at"] = time.time()
@@ -85,6 +94,13 @@ async def github_receiver_task(poll_interval: int = 5):
                     logger.info(f"[SUCCESS] Claimed {len(proxies)} proxies from SX for {acc_id[:25]}! Total Active Pool: {total_live} proxies loaded.")
                     processed_ids.add(acc_id)
                     save_processed_ids(processed_ids)
+                else:
+                    fail_cnt = failure_counts.get(acc_id, 0) + 1
+                    failure_counts[acc_id] = fail_cnt
+                    if fail_cnt >= 2:
+                        # Skip quickly so it moves to valid accounts
+                        processed_ids.add(acc_id)
+                        save_processed_ids(processed_ids)
                 else:
                     fail_cnt = failure_counts.get(acc_id, 0) + 1
                     failure_counts[acc_id] = fail_cnt
