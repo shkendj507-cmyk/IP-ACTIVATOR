@@ -405,12 +405,20 @@ class FastProxyServer:
         self.load_proxies(force=True)
         servers = []
         for port in [1000, 8080]:
-            srv = await asyncio.start_server(lambda r, w: self.handle_client(r, w), self.host, port)
-            servers.append(srv)
+            try:
+                srv = await asyncio.start_server(lambda r, w: self.handle_client(r, w), self.host, port)
+                servers.append(srv)
+                logger.info(f"[+] Proxy Server successfully listening on port {port} (0.0.0.0:{port})")
+            except Exception as e:
+                logger.error(f"[-] Could not bind to port {port}: {e}")
 
         for port, (cc, cname) in COUNTRY_PORTS.items():
-            srv = await asyncio.start_server(lambda r, w, c=cc: self.handle_client(r, w, fixed_country=c), self.host, port)
-            servers.append(srv)
+            try:
+                srv = await asyncio.start_server(lambda r, w, c=cc: self.handle_client(r, w, fixed_country=c), self.host, port)
+                servers.append(srv)
+                logger.info(f"[+] Dedicated {cc} country port listening on {port}")
+            except Exception as e:
+                logger.debug(f"[-] Country port {port} bind notice: {e}")
 
         print("\n" + "=" * 75)
         print("      EASYADS VPS AUTOMATION PROXY ENGINE (ACTIVE 24/7)")
@@ -423,5 +431,10 @@ class FastProxyServer:
         print(f" [+] 407 Auto-Purge   : Active (<0.001s Instant Hot-Swap)")
         print(f" [+] Sessions         : -rotate (Auto New IP) | -hold (Sticky) | -session-1")
         print("=" * 75 + "\n")
+
+        if not servers:
+            logger.error("[-] No proxy ports could be bound! Retrying in 5 seconds...")
+            await asyncio.sleep(5)
+            return
 
         await asyncio.gather(*[s.serve_forever() for s in servers])
