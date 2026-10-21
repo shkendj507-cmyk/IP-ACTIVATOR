@@ -13519,5 +13519,117 @@
     ],
     "claimed_at": 1792594054.3405168,
     "created_by": "PC-Thread-2"
+  },
+  {
+    "id": "91fdc5d92ca844f4b0ad0658599cdf4d",
+    "email": "ads-power-user1792594070960@sx.org",
+    "token": "2465995|CUJh6yyEwKr99A59YIjpEblBJfMe6pZSLJOfRYep7c0a27a6",
+    "auth_code": "w1mrdjiu35",
+    "session_id": "0fd6e59060f84276889d1b5a9a665471",
+    "sx_link": "https://sx-org-proxy.saaslink.net/NyjLyk?x_auth_code=w1mrdjiu35&utm-source=Adspower&utm-keyword=Adspower",
+    "proxies": [
+      {
+        "host": "rukbat.srvgdx.com",
+        "port": 9999,
+        "ip": "190.2.141.12",
+        "id": 242734369,
+        "login": "i6uvqq54ip-pool-res.mobile.corp-country-CA-mode-hold-session-6ad8d097bf42d",
+        "password": "ltvVkTdQDSRQSnQC",
+        "name": "21 October 14-47 - residential,mobile,corporate - CA",
+        "is_unlimited": false
+      },
+      {
+        "host": "sika.srvgdx.com",
+        "port": 9999,
+        "ip": "185.132.177.174",
+        "id": 242734368,
+        "login": "i6uvqq54ip-pool-res.mobile.corp-country-CN-mode-hold-session-6ad8d097bd994",
+        "password": "ltvVkTdQDSRQSnQC",
+        "name": "21 October 14-47 - residential,mobile,corporate - CN",
+        "is_unlimited": false
+      },
+      {
+        "host": "phact.srvgdx.com",
+        "port": 9999,
+        "ip": "62.112.8.26",
+        "id": 242734367,
+        "login": "i6uvqq54ip-pool-res.mobile.corp-country-FR-mode-hold-session-6ad8d097bbe9d",
+        "password": "ltvVkTdQDSRQSnQC",
+        "name": "21 October 14-47 - residential,mobile,corporate - FR",
+        "is_unlimited": false
+      },
+      {
+        "host": "wasat.srvgdx.com",
+        "port": 9999,
+        "ip": "45.14.135.182",
+        "id": 242734366,
+        "login": "i6uvqq54ip-pool-res.mobile.corp-country-AR-mode-hold-session-6ad8d097ba49b",
+        "password": "ltvVkTdQDSRQSnQC",
+        "name": "21 October 14-47 - residential,mobile,corporate - AR",
+        "is_unlimited": false
+      },
+      {
+        "host": "sirius.srvgdx.com",
+        "port": 9999,
+        "ip": "212.8.252.6",
+        "id": 242734365,
+        "login": "i6uvqq54ip-pool-res.mobile.corp-country-DE-mode-hold-session-6ad8d097b8a8d",
+        "password": "ltvVkTdQDSRQSnQC",
+        "name": "21 October 14-47 - residential,mobile,corporate - DE",
+        "is_unlimited": false
+      },
+      {
+        "host": "sika.srvgdx.com",
+        "port": 9999,
+        "ip": "185.132.177.174",
+        "id": 242734364,
+        "login": "i6uvqq54ip-pool-res.mobile.corp-country-UA-mode-hold-session-6ad8d097b70dd",
+        "password": "ltvVkTdQDSRQSnQC",
+        "name": "21 October 14-47 - residential,mobile,corporate - UA",
+        "is_unlimited": false
+      },
+      {
+        "host": "hegra.srvgdx.com",
+        "port": 9999,
+        "ip": "212.8.248.20",
+        "id": 242734363,
+        "login": "i6uvqq54ip-pool-res.mobile.corp-country-VN-mode-hold-session-6ad8d097b558c",
+        "password": "ltvVkTdQDSRQSnQC",
+        "name": "21 October 14-47 - residential,mobile,corporate - VN",
+        "is_unlimited": false
+      },
+      {
+        "host": "meissa.srvgdx.com",
+        "port": 9999,
+        "ip": "185.100.235.113",
+        "id": 242734362,
+        "login": "i6uvqq54ip-pool-res.mobile.corp-country-BR-mode-hold-session-6ad8d097b3aee",
+        "password": "ltvVkTdQDSRQSnQC",
+        "name": "21 October 14-47 - residential,mobile,corporate - BR",
+        "is_unlimited": false
+      },
+      {
+        "host": "rappai.srvgdx.com",
+        "port": 9999,
+        "ip": "212.8.249.142",
+        "id": 242734361,
+        "login": "i6uvqq54ip-pool-res.mobile.corp-country-RU-mode-hold-session-6ad8d097b1f1b",
+        "password": "ltvVkTdQDSRQSnQC",
+        "name": "21 October 14-47 - residential,mobile,corporate - RU",
+        "is_unlimited": false
+      },
+      {
+        "host": "adhara.srvgdx.com",
+        "port": 9999,
+        "ip": "185.185.51.69",
+        "id": 242734360,
+        "login": "i6uvqq54ip-pool-res.mobile.corp-country-US-mode-hold-session-6ad8d097af104",
+        "password": "ltvVkTdQDSRQSnQC",
+        "name": "21 October 14-47 - residential,mobile,corporate - US",
+        "is_unlimited": false
+      }
+    ],
+    "claimed_at": 1792594071.001374,
+    "created_by": "PC-Thread-1"
   }
 ]
