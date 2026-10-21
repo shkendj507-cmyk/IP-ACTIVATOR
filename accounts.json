@@ -9039,5 +9039,117 @@
     ],
     "claimed_at": 1792591532.3025162,
     "created_by": "PC-Thread-2"
+  },
+  {
+    "id": "b440c55756594cc888caccdee0028e9c",
+    "email": "ads-power-user1792591641316@sx.org",
+    "token": "2465895|tXYiN5lA4GejlyH8G22AqFnwhWSnxoiTAvF4iA0S1c582273",
+    "auth_code": "qh9n5f8n7m",
+    "session_id": "11a72f4ab0774449bb0850466dfda532",
+    "sx_link": "https://sx-org-proxy.saaslink.net/NyjLyk?x_auth_code=qh9n5f8n7m&utm-source=Adspower&utm-keyword=Adspower",
+    "proxies": [
+      {
+        "host": "rappai.srvgdx.com",
+        "port": 9999,
+        "ip": "212.8.249.142",
+        "id": 242725884,
+        "login": "smrdhbbovr-pool-res.mobile.corp-country-CA-mode-hold-session-6ad8c71b1e86f",
+        "password": "2ljt3reOKfqoY01v",
+        "name": "21 October 14-07 - residential,mobile,corporate - CA",
+        "is_unlimited": false
+      },
+      {
+        "host": "sika.srvgdx.com",
+        "port": 9999,
+        "ip": "185.132.177.174",
+        "id": 242725883,
+        "login": "smrdhbbovr-pool-res.mobile.corp-country-CN-mode-hold-session-6ad8c71b1d756",
+        "password": "2ljt3reOKfqoY01v",
+        "name": "21 October 14-07 - residential,mobile,corporate - CN",
+        "is_unlimited": false
+      },
+      {
+        "host": "hegra.srvgdx.com",
+        "port": 9999,
+        "ip": "212.8.248.20",
+        "id": 242725882,
+        "login": "smrdhbbovr-pool-res.mobile.corp-country-FR-mode-hold-session-6ad8c71b1c5cb",
+        "password": "2ljt3reOKfqoY01v",
+        "name": "21 October 14-07 - residential,mobile,corporate - FR",
+        "is_unlimited": false
+      },
+      {
+        "host": "toas.srvgdx.com",
+        "port": 9999,
+        "ip": "82.38.66.153",
+        "id": 242725881,
+        "login": "smrdhbbovr-pool-res.mobile.corp-country-AR-mode-hold-session-6ad8c71b1b4b8",
+        "password": "2ljt3reOKfqoY01v",
+        "name": "21 October 14-07 - residential,mobile,corporate - AR",
+        "is_unlimited": false
+      },
+      {
+        "host": "lich.srvgdx.com",
+        "port": 9999,
+        "ip": "190.2.141.31",
+        "id": 242725880,
+        "login": "smrdhbbovr-pool-res.mobile.corp-country-DE-mode-hold-session-6ad8c71b1a3b4",
+        "password": "2ljt3reOKfqoY01v",
+        "name": "21 October 14-07 - residential,mobile,corporate - DE",
+        "is_unlimited": false
+      },
+      {
+        "host": "sika.srvgdx.com",
+        "port": 9999,
+        "ip": "185.132.177.174",
+        "id": 242725879,
+        "login": "smrdhbbovr-pool-res.mobile.corp-country-UA-mode-hold-session-6ad8c71b192a1",
+        "password": "2ljt3reOKfqoY01v",
+        "name": "21 October 14-07 - residential,mobile,corporate - UA",
+        "is_unlimited": false
+      },
+      {
+        "host": "hegra.srvgdx.com",
+        "port": 9999,
+        "ip": "212.8.248.20",
+        "id": 242725878,
+        "login": "smrdhbbovr-pool-res.mobile.corp-country-VN-mode-hold-session-6ad8c71b181c5",
+        "password": "2ljt3reOKfqoY01v",
+        "name": "21 October 14-07 - residential,mobile,corporate - VN",
+        "is_unlimited": false
+      },
+      {
+        "host": "rukbat.srvgdx.com",
+        "port": 9999,
+        "ip": "190.2.141.12",
+        "id": 242725877,
+        "login": "smrdhbbovr-pool-res.mobile.corp-country-BR-mode-hold-session-6ad8c71b1710f",
+        "password": "2ljt3reOKfqoY01v",
+        "name": "21 October 14-07 - residential,mobile,corporate - BR",
+        "is_unlimited": false
+      },
+      {
+        "host": "wasat.srvgdx.com",
+        "port": 9999,
+        "ip": "45.14.135.182",
+        "id": 242725876,
+        "login": "smrdhbbovr-pool-res.mobile.corp-country-RU-mode-hold-session-6ad8c71b15ff1",
+        "password": "2ljt3reOKfqoY01v",
+        "name": "21 October 14-07 - residential,mobile,corporate - RU",
+        "is_unlimited": false
+      },
+      {
+        "host": "hegra.srvgdx.com",
+        "port": 9999,
+        "ip": "212.8.248.20",
+        "id": 242725875,
+        "login": "smrdhbbovr-pool-res.mobile.corp-country-US-mode-hold-session-6ad8c71b142c3",
+        "password": "2ljt3reOKfqoY01v",
+        "name": "21 October 14-07 - residential,mobile,corporate - US",
+        "is_unlimited": false
+      }
+    ],
+    "claimed_at": 1792591642.7311246,
+    "created_by": "PC-Thread-2"
   }
 ]
